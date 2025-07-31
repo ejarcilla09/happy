@@ -8,19 +8,19 @@
     <style>
         body {
             margin: 0;
-            height: 100vh;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
             background: linear-gradient(135deg, #ffb1c0, #d8b4fe);
             font-family: 'Parisienne', cursive;
             color: white;
-            overflow: hidden;
             position: relative;
             animation: gradientFade 10s ease-in-out infinite;
             touch-action: manipulation;
             cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"><text x="0" y="15" font-size="15">💖</text></svg>'), auto;
+            min-height: 100vh;
+            padding: 1rem;
+            box-sizing: border-box;
         }
         @keyframes gradientFade {
             0% { background: linear-gradient(135deg, #ffb1c0, #d8b4fe); }
@@ -37,7 +37,7 @@
             position: relative;
             transform: rotate(-45deg);
             animation: beat 1.2s infinite;
-            margin-bottom: 2rem;
+            margin: 2rem 0;
             box-shadow: 0 0 20px rgba(255, 105, 145, 0.8);
         }
         .heart::before,
@@ -117,7 +117,7 @@
             text-align: center;
             max-width: 90%;
             text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
-            margin-bottom: 1rem;
+            margin: 1rem 0;
             animation: fadeIn 1s ease-in;
         }
         #typed-message {
@@ -138,7 +138,7 @@
             font-family: 'Parisienne', cursive;
             animation: buttonBeat 1.5s infinite, glow 2s infinite;
         }
-        .reveal-btn:hover {
+        .reveal-btn:hover, .reveal-btn:active {
             background: #ff4d79;
             transform: scale(1.1);
         }
@@ -154,7 +154,7 @@
         }
         #hidden-message {
             display: none;
-            margin-top: 1rem;
+            margin: 1rem 0;
             font-size: 1.5rem;
             background: rgba(0, 0, 0, 0.4);
             padding: 1.5rem;
@@ -176,7 +176,7 @@
             border-radius: 5px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
             transform: rotate(-5deg);
-            margin-top: 1rem;
+            margin: 1rem 0;
             max-width: 80%;
             text-align: center;
             transition: transform 0.3s ease;
@@ -197,14 +197,21 @@
             font-family: 'Parisienne', cursive;
         }
         @media (max-width: 600px) {
+            body {
+                padding: 0.5rem;
+            }
             .heart {
                 width: 20vw;
                 height: 20vw;
+                max-width: 80px;
+                max-height: 80px;
             }
             .heart::before,
             .heart::after {
                 width: 20vw;
                 height: 20vw;
+                max-width: 80px;
+                max-height: 80px;
             }
             .heart::before {
                 top: -10vw;
