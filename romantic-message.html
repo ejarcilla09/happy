@@ -20,6 +20,7 @@
             position: relative;
             animation: gradientFade 10s ease-in-out infinite;
             touch-action: manipulation;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"><text x="0" y="15" font-size="15">💖</text></svg>'), auto;
         }
         @keyframes gradientFade {
             0% { background: linear-gradient(135deg, #ffb1c0, #d8b4fe); }
@@ -101,6 +102,16 @@
             0% { transform: translateY(-20px) rotate(0deg); opacity: 0.7; }
             100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
         }
+        .heart-particle {
+            position: absolute;
+            font-size: 1rem;
+            color: #ff9ab2;
+            animation: particleBurst 1s ease-out forwards;
+        }
+        @keyframes particleBurst {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(2) translateY(-50px); opacity: 0; }
+        }
         .message {
             font-size: 2rem;
             text-align: center;
@@ -123,9 +134,9 @@
             cursor: pointer;
             border-radius: 20px;
             transition: all 0.3s ease;
-            box-shadow: 0 0 15px rgba(255, 105, 145, 0.6);
+            box-shadow: 0 0 15px rgba(255, 105, 145, 0.6), 0 0 20px rgba(255, 105, 145, 0.4);
             font-family: 'Parisienne', cursive;
-            animation: buttonBeat 1.5s infinite;
+            animation: buttonBeat 1.5s infinite, glow 2s infinite;
         }
         .reveal-btn:hover {
             background: #ff4d79;
@@ -135,6 +146,11 @@
             0% { transform: scale(1); }
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
+        }
+        @keyframes glow {
+            0% { box-shadow: 0 0 15px rgba(255, 105, 145, 0.6), 0 0 20px rgba(255, 105, 145, 0.4); }
+            50% { box-shadow: 0 0 25px rgba(255, 105, 145, 0.8), 0 0 30px rgba(255, 105, 145, 0.6); }
+            100% { box-shadow: 0 0 15px rgba(255, 105, 145, 0.6), 0 0 20px rgba(255, 105, 145, 0.4); }
         }
         #hidden-message {
             display: none;
@@ -146,7 +162,13 @@
             max-width: 90%;
             text-align: center;
             box-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
-            animation: fadeIn 1s ease-in;
+            transform: scale(0);
+            opacity: 0;
+            transition: transform 0.5s ease, opacity 0.5s ease;
+        }
+        #hidden-message.show {
+            transform: scale(1);
+            opacity: 1;
         }
         .polaroid {
             background: #fff;
@@ -157,7 +179,10 @@
             margin-top: 1rem;
             max-width: 80%;
             text-align: center;
-            animation: fadeIn 1s ease-in;
+            transition: transform 0.3s ease;
+        }
+        .polaroid:hover, .polaroid:active {
+            transform: rotate(-5deg) scale(1.05);
         }
         .polaroid img {
             width: 100%;
@@ -170,20 +195,6 @@
             color: #333;
             margin-top: 0.5rem;
             font-family: 'Parisienne', cursive;
-        }
-        .music-toggle {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            padding: 0.5rem 1rem;
-            background: #ff6f91;
-            border: none;
-            color: white;
-            border-radius: 10px;
-            cursor: pointer;
-            font-family: 'Parisienne', cursive;
-            font-size: 1.2rem;
-            touch-action: manipulation;
         }
         @media (max-width: 600px) {
             .heart {
@@ -208,19 +219,15 @@
                 font-size: 1.2rem;
                 padding: 0.6rem 1.2rem;
             }
-            #hidden-message {
-                font-size: 1.2rem;
-                padding: 1rem;
-            }
             .polaroid img {
                 max-width: 150px;
             }
             .polaroid-caption {
                 font-size: 1rem;
             }
-            .music-toggle {
-                font-size: 1rem;
-                padding: 0.4rem 0.8rem;
+            #hidden-message {
+                font-size: 1.2rem;
+                padding: 1rem;
             }
         }
     </style>
@@ -238,37 +245,86 @@
         <img src="13.jpg" alt="Couple Photo">
         <div class="polaroid-caption">Forever Us 💞</div>
     </div>
-    <button class="music-toggle" onclick="toggleMusic()">Pause Music ❄️</button>
     <audio id="background-music" autoplay loop>
         <source src="iris.mp3" type="audio/mp3">
     </audio>
 
     <script>
-        // Auto-play music
+        // Auto-play music with fade-in
         window.onload = () => {
             const audio = document.getElementById("background-music");
+            audio.volume = 0;
             audio.play().catch(() => {
-                document.addEventListener("click", () => audio.play(), { once: true });
-                document.addEventListener("touchstart", () => audio.play(), { once: true });
+                document.addEventListener("click", () => {
+                    audio.play();
+                    fadeInAudio();
+                }, { once: true });
+                document.addEventListener("touchstart", () => {
+                    audio.play();
+                    fadeInAudio();
+                }, { once: true });
             });
+            fadeInAudio();
             typeMessage();
+            addPolaroidTouch();
         };
+        function fadeInAudio() {
+            const audio = document.getElementById("background-music");
+            let volume = 0;
+            const fade = setInterval(() => {
+                if (volume < 0.5) {
+                    volume += 0.01;
+                    audio.volume = volume;
+                } else {
+                    clearInterval(fade);
+                }
+            }, 100);
+        }
 
-        // Typing animation for the message
-        const message = "You're my favorite person in the whole world! 🥰";
+        // Typing animation with cycling messages
+        const messages = [
+            "You're my favorite person in the whole world! 🥰",
+            "You make every day brighter, baby! 🌟",
+            "My heart beats only for you! 💖"
+        ];
+        let messageIndex = 0;
         let i = 0;
         function typeMessage() {
-            if (i < message.length) {
-                document.getElementById("typed-message").innerHTML += message.charAt(i);
+            const currentMessage = messages[messageIndex];
+            if (i < currentMessage.length) {
+                document.getElementById("typed-message").innerHTML += currentMessage.charAt(i);
                 i++;
                 setTimeout(typeMessage, 100);
+            } else {
+                setTimeout(() => {
+                    document.getElementById("typed-message").innerHTML = "";
+                    i = 0;
+                    messageIndex = (messageIndex + 1) % messages.length;
+                    typeMessage();
+                }, 2000);
             }
         }
 
-        // Reveal hidden message
+        // Reveal hidden message with heart burst
+        function createHeartParticle(x, y) {
+            const particle = document.createElement("div");
+            particle.className = "heart-particle";
+            particle.innerHTML = "💖";
+            particle.style.left = x + "px";
+            particle.style.top = y + "px";
+            particle.style.transform = `translate(${Math.random() * 100 - 50}px, ${Math.random() * -100}px)`;
+            document.body.appendChild(particle);
+            setTimeout(() => particle.remove(), 1000);
+        }
         function revealMessage() {
             const hiddenMessage = document.getElementById("hidden-message");
             hiddenMessage.style.display = "block";
+            hiddenMessage.classList.add("show");
+            const revealBtn = document.getElementById("reveal-btn");
+            const rect = revealBtn.getBoundingClientRect();
+            for (let i = 0; i < 10; i++) {
+                createHeartParticle(rect.left + rect.width / 2, rect.top + rect.height / 2);
+            }
         }
 
         // Sparkle effect
@@ -313,19 +369,26 @@
         }
         setInterval(createPetal, 500);
 
-        // Music toggle
-        const audio = document.getElementById("background-music");
-        let isPlaying = true;
-        function toggleMusic() {
-            if (isPlaying) {
-                audio.pause();
-                isPlaying = false;
-                document.querySelector(".music-toggle").innerText = "Play Music 🎶";
-            } else {
-                audio.play();
-                isPlaying = true;
-                document.querySelector(".music-toggle").innerText = "Pause Music ❄️";
+        // Heart burst on background click/tap
+        document.addEventListener("click", (e) => {
+            if (!e.target.closest(".reveal-btn, .polaroid")) {
+                createHeartParticle(e.clientX, e.clientY);
             }
+        });
+        document.addEventListener("touchstart", (e) => {
+            if (!e.target.closest(".reveal-btn, .polaroid")) {
+                const touch = e.touches[0];
+                createHeartParticle(touch.clientX, touch.clientY);
+            }
+        });
+
+        // Polaroid touch interaction
+        function addPolaroidTouch() {
+            const polaroid = document.querySelector(".polaroid");
+            polaroid.addEventListener("touchstart", () => {
+                polaroid.style.transform = "rotate(-5deg) scale(1.05)";
+                setTimeout(() => polaroid.style.transform = "rotate(-5deg) scale(1)", 300);
+            });
         }
     </script>
 </body>
