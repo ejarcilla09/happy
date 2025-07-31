@@ -155,7 +155,6 @@
             box-shadow: 0 0 15px rgba(255, 105, 145, 0.6);
             font-family: 'Parisienne', cursive;
             animation: buttonBeat 1.5s infinite;
-            position: relative;
         }
         .reveal-btn:hover {
             background: #ff4d79;
@@ -315,7 +314,7 @@
         <img src="https://via.placeholder.com/100x100?text=You+and+Me" alt="Couple Photo Preview">
     </div>
     <audio id="background-music" autoplay loop>
-        <source src="iris.mp3" type="audio/mp3">
+        <source src="https://www.royaltyfreemusicclips.com/free_music/romantic_piano.mp3" type="audio/mp3">
     </audio>
 
     <script>
@@ -326,6 +325,7 @@
                 document.addEventListener("click", () => audio.play(), { once: true });
                 document.addEventListener("touchstart", () => audio.play(), { once: true });
             });
+            rotateQuote();
         };
 
         // Rotating love quotes
@@ -340,7 +340,6 @@
             quoteContainer.textContent = quotes[quoteIndex];
             quoteIndex = (quoteIndex + 1) % quotes.length;
         }
-        rotateQuote();
         setInterval(rotateQuote, 6000);
 
         // Sparkle effect
@@ -418,10 +417,6 @@
             document.body.appendChild(particle);
             setTimeout(() => particle.remove(), 1000);
         }
-
-        // Prompt handling
-        let noClickCount = 0;
-        const noBtn = document.getElementById("no-btn");
         function handleYes() {
             const yesBtn = document.querySelector('a[href="romantic-message.html"]');
             const rect = yesBtn.getBoundingClientRect();
@@ -429,6 +424,10 @@
                 createHeartParticle(rect.left + rect.width / 2, rect.top + rect.height / 2);
             }
         }
+
+        // Prompt handling
+        let noClickCount = 0;
+        const noBtn = document.getElementById("no-btn");
         function handleNo() {
             noClickCount++;
             noBtn.classList.add("shake");
