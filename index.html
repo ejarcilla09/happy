@@ -126,7 +126,7 @@
             100% { transform: scale(1.5); opacity: 0; }
         }
         .prompt-question {
-            font-size: 2.5rem;
+            font-size: 3rem;
             text-align: center;
             margin-bottom: 2rem;
             text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
@@ -160,18 +160,6 @@
             background: #ff4d79;
             transform: scale(1.1);
         }
-        .reveal-btn:hover::after {
-            content: attr(data-hover);
-            position: absolute;
-            top: -2rem;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(255, 105, 145, 0.8);
-            padding: 0.3rem 0.6rem;
-            border-radius: 5px;
-            font-size: 1rem;
-            color: white;
-        }
         @keyframes buttonBeat {
             0% { transform: scale(1); }
             50% { transform: scale(1.05); }
@@ -186,25 +174,6 @@
             50% { transform: translateX(10px); }
             75% { transform: translateX(-10px); }
             100% { transform: translateX(0); }
-        }
-        .gif-container {
-            position: absolute;
-            top: 10%;
-            left: 10%;
-            opacity: 0.7;
-            z-index: 5;
-            animation: fadeIn 2s ease-in;
-        }
-        .gif-container.right {
-            left: auto;
-            right: 10%;
-            top: 70%;
-        }
-        .gif-container img {
-            width: 100px;
-            height: auto;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
         }
         .quote-container {
             position: absolute;
@@ -269,23 +238,12 @@
                 left: 10vw;
             }
             .prompt-question {
-                font-size: 1.8rem;
+                font-size: 2.2rem;
                 margin-bottom: 1.5rem;
             }
             .reveal-btn {
                 font-size: 1.2rem;
                 padding: 0.6rem 1.2rem;
-            }
-            .gif-container img {
-                width: 80px;
-            }
-            .gif-container {
-                top: 5%;
-                left: 5%;
-            }
-            .gif-container.right {
-                right: 5%;
-                top: 75%;
             }
             .quote-container {
                 font-size: 1.2rem;
@@ -298,17 +256,11 @@
 </head>
 <body>
     <div class="quote-container" id="quote-container"></div>
-    <div class="gif-container">
-        <img src="https://media.giphy.com/media/3o6ZtaNfc1H12pM5t6/giphy.gif" alt="Romantic Heart GIF">
-    </div>
-    <div class="gif-container right">
-        <img src="https://media.giphy.com/media/l0MYt5jPRbr0nQw3s/giphy.gif" alt="Romantic Sparkle GIF">
-    </div>
     <div class="heart"></div>
     <div class="prompt-question">Do you love me? 💖</div>
     <div>
-        <a href="romantic-message.html"><button class="reveal-btn" onclick="handleYes()" data-hover="I knew it! 💕">Yes</button></a>
-        <button class="reveal-btn" id="no-btn" onclick="handleNo()" data-hover="Try again, love! 😘">No</button>
+        <a href="romantic-message.html"><button class="reveal-btn" onclick="handleYes()">Yes</button></a>
+        <button class="reveal-btn" id="no-btn" onclick="handleNo()">No</button>
     </div>
     <div class="polaroid-preview">
         <img src="https://via.placeholder.com/100x100?text=You+and+Me" alt="Couple Photo Preview">
@@ -423,6 +375,7 @@
             for (let i = 0; i < 10; i++) {
                 createHeartParticle(rect.left + rect.width / 2, rect.top + rect.height / 2);
             }
+            alert("I did not force you hah, I love you hehe");
         }
 
         // Prompt handling
