@@ -20,6 +20,7 @@
             position: relative;
             animation: gradientFade 10s ease-in-out infinite;
             touch-action: manipulation;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20"><text x="0" y="15" font-size="15">💖</text></svg>'), auto;
         }
         @keyframes gradientFade {
             0% { background: linear-gradient(135deg, #ffb1c0, #d8b4fe); }
@@ -152,9 +153,9 @@
             cursor: pointer;
             border-radius: 20px;
             transition: all 0.3s ease;
-            box-shadow: 0 0 15px rgba(255, 105, 145, 0.6);
+            box-shadow: 0 0 15px rgba(255, 105, 145, 0.6), 0 0 20px rgba(255, 105, 145, 0.4);
             font-family: 'Parisienne', cursive;
-            animation: buttonBeat 1.5s infinite;
+            animation: buttonBeat 1.5s infinite, glow 2s infinite;
         }
         .reveal-btn:hover {
             background: #ff4d79;
@@ -164,6 +165,11 @@
             0% { transform: scale(1); }
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
+        }
+        @keyframes glow {
+            0% { box-shadow: 0 0 15px rgba(255, 105, 145, 0.6), 0 0 20px rgba(255, 105, 145, 0.4); }
+            50% { box-shadow: 0 0 25px rgba(255, 105, 145, 0.8), 0 0 30px rgba(255, 105, 145, 0.6); }
+            100% { box-shadow: 0 0 15px rgba(255, 105, 145, 0.6), 0 0 20px rgba(255, 105, 145, 0.4); }
         }
         #no-btn.shake {
             animation: shake 0.3s;
@@ -189,28 +195,6 @@
             80% { opacity: 1; }
             100% { opacity: 0; }
         }
-        .polaroid-preview {
-            position: absolute;
-            bottom: 10%;
-            background: #fff;
-            padding: 0.5rem;
-            border-radius: 5px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            transform: rotate(5deg);
-            animation: pulse 2s infinite;
-            opacity: 0.8;
-        }
-        .polaroid-preview img {
-            width: 100px;
-            height: auto;
-            filter: blur(2px);
-            border-radius: 5px;
-        }
-        @keyframes pulse {
-            0% { transform: scale(1) rotate(5deg); }
-            50% { transform: scale(1.05) rotate(5deg); }
-            100% { transform: scale(1) rotate(5deg); }
-        }
         .heart-particle {
             position: absolute;
             font-size: 1rem;
@@ -220,6 +204,35 @@
         @keyframes particleBurst {
             0% { transform: scale(1); opacity: 1; }
             100% { transform: scale(2) translateY(-50px); opacity: 0; }
+        }
+        .popup {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 20;
+        }
+        .popup-content {
+            background: #ff6f91;
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            font-size: 1.5rem;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+            animation: popIn 0.5s ease-in, popOut 0.5s ease-out 1.5s forwards;
+        }
+        @keyframes popIn {
+            0% { transform: scale(0); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        @keyframes popOut {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.2); opacity: 0; }
         }
         @media (max-width: 600px) {
             .heart {
@@ -248,8 +261,9 @@
             .quote-container {
                 font-size: 1.2rem;
             }
-            .polaroid-preview img {
-                width: 80px;
+            .popup-content {
+                font-size: 1.2rem;
+                padding: 0.8rem 1.5rem;
             }
         }
     </style>
@@ -262,25 +276,45 @@
         <a href="romantic-message.html"><button class="reveal-btn" onclick="handleYes()">Yes</button></a>
         <button class="reveal-btn" id="no-btn" onclick="handleNo()">No</button>
     </div>
-    <div class="polaroid-preview">
-        <img src="11.jpg" alt="Couple Photo Preview">
+    <div class="popup" id="yes-popup" style="display: none;">
+        <div class="popup-content">I did not force you hah, I love you hehe 💕</div>
     </div>
     <audio id="background-music" autoplay loop>
         <source src="iris.mp3" type="audio/mp3">
     </audio>
 
     <script>
-        // Auto-play music
+        // Auto-play music with fade-in
         window.onload = () => {
             const audio = document.getElementById("background-music");
+            audio.volume = 0;
             audio.play().catch(() => {
-                document.addEventListener("click", () => audio.play(), { once: true });
-                document.addEventListener("touchstart", () => audio.play(), { once: true });
+                document.addEventListener("click", () => {
+                    audio.play();
+                    fadeInAudio();
+                }, { once: true });
+                document.addEventListener("touchstart", () => {
+                    audio.play();
+                    fadeInAudio();
+                }, { once: true });
             });
+            fadeInAudio();
             rotateQuote();
         };
+        function fadeInAudio() {
+            const audio = document.getElementById("background-music");
+            let volume = 0;
+            const fade = setInterval(() => {
+                if (volume < 0.5) {
+                    volume += 0.01;
+                    audio.volume = volume;
+                } else {
+                    clearInterval(fade);
+                }
+            }, 100);
+        }
 
-        // Rotating love quotes
+        // Rotating love quotes with random timing
         const quotes = [
             "You are my heart's favorite place. 💖",
             "Every moment with you is magic. ✨",
@@ -291,8 +325,8 @@
         function rotateQuote() {
             quoteContainer.textContent = quotes[quoteIndex];
             quoteIndex = (quoteIndex + 1) % quotes.length;
+            setTimeout(rotateQuote, Math.random() * 4000 + 4000);
         }
-        setInterval(rotateQuote, 6000);
 
         // Sparkle effect
         function createSparkle() {
@@ -358,7 +392,7 @@
         }
         setInterval(createPetal, 500);
 
-        // Heart particle burst on Yes click
+        // Heart particle burst on click or Yes
         function createHeartParticle(x, y) {
             const particle = document.createElement("div");
             particle.className = "heart-particle";
@@ -375,14 +409,32 @@
             for (let i = 0; i < 10; i++) {
                 createHeartParticle(rect.left + rect.width / 2, rect.top + rect.height / 2);
             }
-            alert("I did not force you hah, I love you hehe");
+            const popup = document.getElementById("yes-popup");
+            popup.style.display = "flex";
+            setTimeout(() => {
+                popup.style.display = "none";
+                window.location.href = "romantic-message.html";
+            }, 2000);
         }
+        document.addEventListener("click", (e) => {
+            if (!e.target.closest(".reveal-btn")) {
+                createHeartParticle(e.clientX, e.clientY);
+            }
+        });
+        document.addEventListener("touchstart", (e) => {
+            if (!e.target.closest(".reveal-btn")) {
+                const touch = e.touches[0];
+                createHeartParticle(touch.clientX, touch.clientY);
+            }
+        });
 
         // Prompt handling
         let noClickCount = 0;
         const noBtn = document.getElementById("no-btn");
         function handleNo() {
             noClickCount++;
+            const texts = ["No", "Really?", "Sure?"];
+            noBtn.textContent = texts[noClickCount] || "No";
             noBtn.classList.add("shake");
             setTimeout(() => noBtn.classList.remove("shake"), 300);
             noBtn.style.position = "absolute";
